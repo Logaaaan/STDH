@@ -324,9 +324,11 @@ _data = {
 
 [node name="CanvasLayer" type="CanvasLayer" parent="."]
 layer = 10
+visible = false
 
 [node name="ScketchyBorder" type="Sprite2D" parent="CanvasLayer"]
 z_index = 255
+scale = Vector2(2, 2)
 texture = ExtResource("1_qr5kr")
 centered = false
 
@@ -392,6 +394,6 @@ limit_left = -32
 scroll_base_scale = Vector2(0.333, 0)
 
 [node name="Bg" type="Sprite2D" parent="ParallaxBackground"]
-position = Vector2(0, -110)
+position = Vector2(0, -180)
 texture = ExtResource("3_wcwn5")
 centered = false
