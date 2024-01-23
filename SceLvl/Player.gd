@@ -17,6 +17,14 @@ var animPl = $Sketchy/AnimationPlayer
 var checks = $Checks
 @onready
 var checkC = $Checks/C
+@onready
+var checkA = $Checks/A
+@onready
+var checkB = $Checks/B
+@onready
+var checkD = $Checks/D
+@onready
+var checkE = $Checks/E
 
 var asp = 0
 var gsp = 0
@@ -35,11 +43,15 @@ func _ready() -> void:
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta: float) -> void:
-	floorMove()
+	if isGrounded:
+		floorMove()
+	else:
+		airMove()
 	sprite.flip_h = dir == -1
 	anim()
 
 func airMove():
+	checks.rotation = 0
 	aState = 2
 	if Input.is_action_just_pressed("A"):
 		asp = JSP
@@ -57,8 +69,10 @@ func airMove():
 	else:
 		hsp = move_toward(hsp,0,DCC)
 	global_position += Vector2(hsp,asp)/60
+	checkFloor()
 
 func floorMove():
+	checks.rotation = floor(ang/(PI/2))*(PI/2)
 	aState = 0
 	var InputDir = Input.get_axis("Left","Right")
 	if abs(gsp)>ACC*2:
@@ -74,10 +88,40 @@ func floorMove():
 		gsp = move_toward(gsp,0,DCC)
 		
 	global_position += Vector2.from_angle(ang+0)*gsp/60
-	ang = getFloorAngle()
+	checkFloor()
+	if isGrounded == false:
+		hsp = Vector2.from_angle(ang).x*gsp
+		asp = Vector2.from_angle(ang).y*gsp
 
 func getFloorAngle():
 	return 0
+
+func Aground():
+	var pt = checkA.get_collision_point()
+	var normal = checkA.get_collision_normal()
+	var angle = normal.angle()+PI/2
+	ang = angle
+	global_position.y = pt.y-vrd+1
+
+func Bground():
+	var pt = checkB.get_collision_point()
+	var normal = checkB.get_collision_normal()
+	var angle = normal.angle()+PI/2
+	ang = angle
+	global_position.y = pt.y-vrd+1
+
+func checkFloor():
+	isGrounded = checkA.is_colliding() or checkB.is_colliding()
+	if isGrounded:
+		if checkA.is_colliding() and checkB.is_colliding():
+			if checkA.get_collision_point().y < checkB.get_collision_point().y:
+				Aground()
+			else:
+				Bground()
+		elif checkA.is_colliding():
+			Aground()
+		else:
+			Bground()
 
 func anim():
 	match aState:
@@ -89,7 +133,7 @@ func anim():
 			sprite.rotate(PI/5*dir)
 			animPl.play("roll")
 		1:
-			sprite.rotation = floor((ang/(PI/4)))*(PI/4)
+			sprite.rotation = ang
 			if gsp > TSP - 20:
 				animPl.play("coast")
 			else:
