@@ -1,7 +1,8 @@
-[gd_scene load_steps=16 format=3 uid="uid://cxdx2u5rue2e6"]
+[gd_scene load_steps=18 format=3 uid="uid://cxdx2u5rue2e6"]
 
 [ext_resource type="Texture2D" uid="uid://8pbi400s23n4" path="res://ArtPng/ScketchyBorder.png" id="1_qr5kr"]
 [ext_resource type="Texture2D" uid="uid://cfnecykmjd81e" path="res://ArtPng/Tiles.png" id="2_nhryk"]
+[ext_resource type="FontFile" uid="uid://brqxy27lwgqnc" path="res://ArtTTF/Conkbasic.ttf" id="2_vp0nj"]
 [ext_resource type="Texture2D" uid="uid://m38ikhgtub0j" path="res://ArtPng/Bg.png" id="3_wcwn5"]
 [ext_resource type="AudioStream" uid="uid://c5vkmx0besba4" path="res://Sound/1-42. Little Planet.mp3" id="4_v3kal"]
 [ext_resource type="Texture2D" uid="uid://datfrisq0cgph" path="res://ArtPng/Sketchy.png" id="5_8mlkk"]
@@ -310,6 +311,23 @@ tracks/0/keys = {
 "values": [2]
 }
 
+[sub_resource type="Animation" id="Animation_aau07"]
+resource_name = "skid"
+loop_mode = 1
+step = 0.0333333
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [11]
+}
+
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_0224r"]
 _data = {
 "RESET": SubResource("Animation_y2p30"),
@@ -317,7 +335,8 @@ _data = {
 "duck": SubResource("Animation_2ijvs"),
 "idle": SubResource("Animation_gavfm"),
 "roll": SubResource("Animation_gnyhk"),
-"run": SubResource("Animation_sv4mb")
+"run": SubResource("Animation_sv4mb"),
+"skid": SubResource("Animation_aau07")
 }
 
 [node name="main" type="Node2D"]
@@ -326,9 +345,31 @@ _data = {
 layer = 10
 
 [node name="ScketchyBorder" type="Sprite2D" parent="CanvasLayer"]
-z_index = 255
+z_index = 128
 texture = ExtResource("1_qr5kr")
 centered = false
+
+[node name="Label" type="Label" parent="CanvasLayer"]
+modulate = Color(1, 1, 0, 1)
+z_index = 256
+offset_left = 16.0
+offset_top = 32.0
+offset_right = 56.0
+offset_bottom = 55.0
+theme_override_fonts/font = ExtResource("2_vp0nj")
+theme_override_font_sizes/font_size = 8
+text = "rings 0
+score 0"
+
+[node name="Label2" type="Label" parent="CanvasLayer"]
+z_index = 256
+offset_left = 260.0
+offset_top = 36.0
+offset_right = 300.0
+offset_bottom = 59.0
+theme_override_fonts/font = ExtResource("2_vp0nj")
+theme_override_font_sizes/font_size = 8
+text = "sonic"
 
 [node name="TileMap" type="TileMap" parent="."]
 z_index = -4
@@ -375,7 +416,7 @@ target_position = Vector2(0, -13)
 
 [node name="Sketchy" type="Sprite2D" parent="Player"]
 texture = ExtResource("5_8mlkk")
-hframes = 11
+hframes = 12
 frame = 7
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="Player/Sketchy"]
@@ -384,11 +425,12 @@ libraries = {
 }
 
 [node name="Camera2D" type="Camera2D" parent="Player"]
-position = Vector2(-176, -192)
+position = Vector2(-112, -128)
 anchor_mode = 0
 limit_left = -32
 
 [node name="ParallaxBackground" type="ParallaxBackground" parent="."]
+visible = false
 scroll_base_scale = Vector2(0.333, 0)
 
 [node name="Bg" type="Sprite2D" parent="ParallaxBackground"]
