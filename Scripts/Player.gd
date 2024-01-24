@@ -51,11 +51,11 @@ func _process(delta: float) -> void:
 	anim()
 
 func airMove():
+	vrd = 8
+	checkA.target_position.y = vrd
+	checkB.target_position.y = vrd
 	checks.rotation = 0
 	aState = 2
-	if Input.is_action_just_pressed("A"):
-		asp = JSP
-		return
 	if asp < JSP/2 and Input.is_action_just_released("A"):
 		asp /= 2
 	asp += GRV
@@ -68,10 +68,16 @@ func airMove():
 			hsp = move_toward(hsp,TSP*InputDir,ACC)
 	else:
 		hsp = move_toward(hsp,0,DCC)
+		
+	#Handle Walls
 	global_position += Vector2(hsp,asp)/60
-	checkFloor()
+	if asp > 0:
+		checkFloor()
 
 func floorMove():
+	vrd = 13
+	checkA.target_position.y = vrd*1.7
+	checkB.target_position.y = vrd*1.7
 	checks.rotation = 0
 	aState = 0
 	var InputDir = Input.get_axis("Left","Right")
@@ -87,8 +93,21 @@ func floorMove():
 	else:
 		gsp = move_toward(gsp,0,DCC)
 		
+	#Handle Jumping
+	if Input.is_action_just_pressed("A"):
+		hsp = Vector2.from_angle(ang).x*gsp
+		asp = Vector2.from_angle(ang).y*gsp
+		asp -= Vector2.from_angle(ang-PI/2).y*JSP
+		vrd = 8
+		isGrounded = false
+		Sounds.playSound(0)
+		return
+	#Wall Collisions
+	var result = checkWallGrounded()
+	if result:
+		var signSpd = sign(gsp)
+		gsp = floor(global_position.distance_to(result)*signSpd-(hrd*signSpd))*60
 	global_position += Vector2.from_angle(ang+0)*gsp/60
-	global_position += Vector2.DOWN*2
 	checkFloor()
 	if isGrounded == false:
 		hsp = Vector2.from_angle(ang).x*gsp
@@ -110,6 +129,20 @@ func Bground():
 	var angle = normal.angle()+PI/2
 	ang = angle
 	global_position.y = pt.y-vrd #+1
+
+func checkWallGrounded():
+	var movesTo = Vector2.from_angle(ang)*gsp/60
+	checkC.target_position = Vector2(hrd*sign(movesTo.x),0)+movesTo
+	if checkC.is_colliding():
+		return checkC.get_collision_point()
+	return false
+
+func checkWallArial():
+	var movesTo = Vector2(hsp,asp)/60
+	checkC.target_position = Vector2(hrd*sign(movesTo.x),0)+movesTo
+	if checkC.is_colliding():
+		return checkC.get_collision_point()
+	return false
 
 func checkFloor():
 	isGrounded = checkA.is_colliding() or checkB.is_colliding()
