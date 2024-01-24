@@ -72,7 +72,7 @@ func airMove():
 	checkFloor()
 
 func floorMove():
-	checks.rotation = floor(ang/(PI/2))*(PI/2)
+	checks.rotation = 0
 	aState = 0
 	var InputDir = Input.get_axis("Left","Right")
 	if abs(gsp)>ACC*2:
@@ -88,6 +88,7 @@ func floorMove():
 		gsp = move_toward(gsp,0,DCC)
 		
 	global_position += Vector2.from_angle(ang+0)*gsp/60
+	global_position += Vector2.DOWN*2
 	checkFloor()
 	if isGrounded == false:
 		hsp = Vector2.from_angle(ang).x*gsp
@@ -101,14 +102,14 @@ func Aground():
 	var normal = checkA.get_collision_normal()
 	var angle = normal.angle()+PI/2
 	ang = angle
-	global_position.y = pt.y-vrd+1
+	global_position.y = pt.y-vrd #+1
 
 func Bground():
 	var pt = checkB.get_collision_point()
 	var normal = checkB.get_collision_normal()
 	var angle = normal.angle()+PI/2
 	ang = angle
-	global_position.y = pt.y-vrd+1
+	global_position.y = pt.y-vrd #+1
 
 func checkFloor():
 	isGrounded = checkA.is_colliding() or checkB.is_colliding()
@@ -140,7 +141,7 @@ func anim():
 				animPl.play("run")
 			animPl.speed_scale = sqrt(abs(gsp/TSP))
 		4:
-			sprite.rotation = floor((ang/(PI/4)))*(PI/4)
+			sprite.rotation = ang
 			animPl.play("skid")
 		_:
 			return
