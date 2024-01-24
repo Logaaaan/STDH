@@ -70,6 +70,10 @@ func airMove():
 		hsp = move_toward(hsp,0,DCC)
 		
 	#Handle Walls
+	var result = checkWallArial()
+	if result:
+		hsp = floor(result.x - global_position.x) * 60
+	
 	global_position += Vector2(hsp,asp)/60
 	if asp > 0:
 		checkFloor()
