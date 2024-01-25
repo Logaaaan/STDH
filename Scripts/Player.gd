@@ -72,17 +72,24 @@ func airMove():
 	#Handle Walls
 	var result = checkWallArial()
 	if result:
-		hsp = floor(result.x - global_position.x) * 60
+		var signSpd = sign(hsp)
+		global_position.x = result.x - (hrd*signSpd) - (2*signSpd)
+		hsp = 0
 	
 	global_position += Vector2(hsp,asp)/60
 	if asp > 0:
 		checkFloor()
-
+		if isGrounded:
+			var vel = Vector2(hsp,asp)
+			gsp = Vector2.from_angle(ang).dot(vel.normalized())*vel.length()
+			
+var mode = 0
 func floorMove():
 	vrd = 13
 	checkA.target_position.y = vrd*1.7
 	checkB.target_position.y = vrd*1.7
-	checks.rotation = 0
+	mode = round(ang/(PI/2 ))
+	checks.rotation = mode*PI/2
 	aState = 0
 	var InputDir = Input.get_axis("Left","Right")
 	if abs(gsp)>ACC*2:
@@ -102,6 +109,7 @@ func floorMove():
 		hsp = Vector2.from_angle(ang).x*gsp
 		asp = Vector2.from_angle(ang).y*gsp
 		asp -= Vector2.from_angle(ang-PI/2).y*JSP
+		hsp -= Vector2.from_angle(ang-PI/2).x*JSP
 		vrd = 8
 		isGrounded = false
 		Sounds.playSound(0)
@@ -125,14 +133,38 @@ func Aground():
 	var normal = checkA.get_collision_normal()
 	var angle = normal.angle()+PI/2
 	ang = angle
-	global_position.y = pt.y-vrd #+1
-
+	match mode:
+		0:
+			global_position.y = pt.y-vrd #+1
+		-1:
+			global_position.x = pt.x-vrd #+1
+		-2:
+			global_position.y = pt.y+vrd #+1
+		-3:
+			global_position.x = pt.x+vrd
+		_:
+			global_position.y = pt.y-vrd #+1
 func Bground():
 	var pt = checkB.get_collision_point()
 	var normal = checkB.get_collision_normal()
 	var angle = normal.angle()+PI/2
 	ang = angle
-	global_position.y = pt.y-vrd #+1
+	print(mode)
+	match mode:
+		0:
+			global_position.y = pt.y-vrd #+1
+		-1:
+			global_position.x = pt.x-vrd #+1
+		3:
+			global_position.x = pt.x-vrd #+1
+		-2:
+			global_position.y = pt.y+vrd #+1
+		-3:
+			global_position.x = pt.x+vrd
+		1:
+			global_position.x = pt.x+vrd
+		_:
+			global_position.y = pt.y-vrd #+1
 
 func checkWallGrounded():
 	var movesTo = Vector2.from_angle(ang)*gsp/60

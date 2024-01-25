@@ -171,3 +171,4 @@ libraries = {
 position = Vector2(-112, -128)
 anchor_mode = 0
 limit_left = -32
+limit_bottom = 608
